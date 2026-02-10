@@ -80,6 +80,14 @@ jobs:
 
       - name: Prepare load test config
         run: |
+          SVC_HOST=$(echo "$SVC_HOST" | tr -d '\r\n' | xargs)
+          SVC_HOST=${SVC_HOST#http://}
+          SVC_HOST=${SVC_HOST#https://}
+          SVC_HOST=${SVC_HOST%%/*}
+          if [ -z "$SVC_HOST" ]; then
+            echo "Service host is empty after sanitize" >&2
+            exit 1
+          fi
           AKS_ID=$(az aks show -g $RG_NAME -n $AKS_NAME --query id -o tsv)
           APPINSIGHTS_ID=$(az monitor app-insights component show -g $RG_NAME -a $APPINSIGHTS_NAME --query id -o tsv 2>/dev/null || true)
           if [ -z "$APPINSIGHTS_ID" ]; then
