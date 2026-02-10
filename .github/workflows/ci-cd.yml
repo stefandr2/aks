@@ -59,8 +59,11 @@ jobs:
 
       - name: Wait for service IP
         run: |
-          for i in {1..60}; do
+          for i in {1..180}; do
             HOST=$(kubectl get svc k8s-scale-test -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            if [ -z "$HOST" ]; then
+              HOST=$(kubectl get svc k8s-scale-test -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            fi
             if [ -n "$HOST" ]; then
               echo "SVC_HOST=$HOST" >> $GITHUB_ENV
               break
@@ -68,7 +71,8 @@ jobs:
             sleep 10
           done
           if [ -z "$SVC_HOST" ]; then
-            echo "Service IP not ready" >&2
+            echo "Service endpoint not ready" >&2
+            kubectl get svc k8s-scale-test -o wide >&2
             exit 1
           fi
 
