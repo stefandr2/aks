@@ -65,7 +65,8 @@ jobs:
               HOST=$(kubectl get svc k8s-scale-test -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
             fi
             if [ -n "$HOST" ]; then
-              echo "SVC_HOST=$HOST" >> $GITHUB_ENV
+              SVC_HOST=$HOST
+              echo "SVC_HOST=$SVC_HOST" >> $GITHUB_ENV
               break
             fi
             sleep 10
