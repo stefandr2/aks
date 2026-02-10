@@ -1,0 +1,82 @@
+name: ci-cd
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  RG_NAME: aro
+  LOCATION: swedencentral
+  AKS_NAME: stefandr-aks
+  ACR_NAME: stefandr-acr
+  ACR_LOGIN_SERVER: stefandr-acr.azurecr.io
+  IMAGE_NAME: k8s-scale-test
+  LOAD_TEST_RESOURCE_ID: /subscriptions/113f91f0-83f2-4b50-8e5a-111f1d89e1e1/resourceGroups/aro/providers/Microsoft.LoadTestService/loadTests/stefandr-test
+
+jobs:
+  build-deploy-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: ACR login
+        run: az acr login -n $ACR_NAME
+
+      - name: Build and push image
+        run: |
+          IMAGE_TAG=${GITHUB_SHA}
+          docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
+          docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+
+      - name: AKS context
+        run: az aks get-credentials -g $RG_NAME -n $AKS_NAME --overwrite-existing
+
+      - name: Apply manifests
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/hpa.yaml
+
+      - name: Set deployment image
+        run: |
+          IMAGE_TAG=${GITHUB_SHA}
+          kubectl set image deployment/k8s-scale-test app=$ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
+          kubectl rollout status deployment/k8s-scale-test
+
+      - name: Wait for service IP
+        run: |
+          for i in {1..60}; do
+            HOST=$(kubectl get svc k8s-scale-test -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            if [ -n "$HOST" ]; then
+              echo "SVC_HOST=$HOST" >> $GITHUB_ENV
+              break
+            fi
+            sleep 10
+          done
+          if [ -z "$SVC_HOST" ]; then
+            echo "Service IP not ready" >&2
+            exit 1
+          fi
+
+      - name: Prepare load test config
+        run: sed -i "s/REPLACE_ME_HOST/$SVC_HOST/g" loadtest/azure-load-test.yaml
+
+      - name: Run Azure Load Test
+        uses: azure/load-testing@v1
+        with:
+          loadTestConfigFile: loadtest/azure-load-test.yaml
+          resourceId: ${{ env.LOAD_TEST_RESOURCE_ID }}

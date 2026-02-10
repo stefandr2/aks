@@ -1,0 +1,10 @@
+testId: k8s-scale-test
+displayName: k8s-scale-test
+description: Basic load test against AKS service
+engineInstances: 1
+testPlan: loadtest/jmeter/test-plan.jmx
+properties:
+  HOST: REPLACE_ME_HOST
+  PORT: "80"
+  CPU_MS: "200"
+  LATENCY_MS: "200"

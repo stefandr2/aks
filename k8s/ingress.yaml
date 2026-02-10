@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: k8s-scale-test
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: REPLACE_ME_HOST
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: k8s-scale-test
+                port:
+                  number: 80
