@@ -4,11 +4,13 @@ param(
   [string]$Location = "swedencentral",
   [string]$AksName = "stefandr-aks",
   [string]$AcrName = "stefandracr",
-  [string]$LoadTestName = "stefandrtest"
+  [string]$LoadTestName = "stefandrtest",
+  [string]$AppInsightsName = "aka-ai"
 )
 
 az account set --subscription $SubscriptionId
 az group create -n $ResourceGroup -l $Location
 az acr create -n $AcrName -g $ResourceGroup --sku Basic
 az aks create -g $ResourceGroup -n $AksName --node-count 2 --enable-managed-identity --enable-addons monitoring --attach-acr $AcrName
+az monitor app-insights component create -g $ResourceGroup -a $AppInsightsName -l $Location --application-type web
 az load create -g $ResourceGroup -n $LoadTestName

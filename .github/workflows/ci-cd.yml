@@ -18,6 +18,7 @@ env:
   ACR_LOGIN_SERVER: stefandracr.azurecr.io
   IMAGE_NAME: k8s-scale-test
   LOAD_TEST_RESOURCE_NAME: stefandrtest
+  APPINSIGHTS_NAME: aka-ai
 
 jobs:
   build-deploy-test:
@@ -78,7 +79,26 @@ jobs:
           fi
 
       - name: Prepare load test config
-        run: sed -i "s/REPLACE_ME_HOST/$SVC_HOST/g" loadtest/azure-load-test.yaml
+        run: |
+          AKS_ID=$(az aks show -g $RG_NAME -n $AKS_NAME --query id -o tsv)
+          APPINSIGHTS_ID=$(az monitor app-insights component show -g $RG_NAME -a $APPINSIGHTS_NAME --query id -o tsv 2>/dev/null || true)
+          if [ -z "$APPINSIGHTS_ID" ]; then
+            az monitor app-insights component create -g $RG_NAME -a $APPINSIGHTS_NAME -l $LOCATION --application-type web
+            APPINSIGHTS_ID=$(az monitor app-insights component show -g $RG_NAME -a $APPINSIGHTS_NAME --query id -o tsv)
+          fi
+          if [ -z "$AKS_ID" ]; then
+            echo "AKS resource ID not found" >&2
+            exit 1
+          fi
+          if [ -z "$APPINSIGHTS_ID" ]; then
+            echo "App Insights resource ID not found" >&2
+            exit 1
+          fi
+          sed -i "s/REPLACE_ME_HOST/$SVC_HOST/g" loadtest/azure-load-test.yaml
+          sed -i "s|REPLACE_AKS_RESOURCE_ID|$AKS_ID|g" loadtest/azure-load-test.yaml
+          sed -i "s|REPLACE_APPINSIGHTS_RESOURCE_ID|$APPINSIGHTS_ID|g" loadtest/azure-load-test.yaml
+          sed -i "s|replace_aks_resource_id|$AKS_ID|g" loadtest/azure-load-test.yaml
+          sed -i "s|replace_appinsights_resource_id|$APPINSIGHTS_ID|g" loadtest/azure-load-test.yaml
 
       - name: Run Azure Load Test
         uses: azure/load-testing@v1
