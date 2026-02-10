@@ -3,7 +3,7 @@ param(
   [string]$ResourceGroup = "aro",
   [string]$Location = "swedencentral",
   [string]$AksName = "stefandr-aks",
-  [string]$AcrName = "stefandr-acr",
+  [string]$AcrName = "stefandracr",
   [string]$LoadTestName = "stefandr-test"
 )
 

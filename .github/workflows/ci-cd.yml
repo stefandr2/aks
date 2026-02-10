@@ -14,8 +14,8 @@ env:
   RG_NAME: aro
   LOCATION: swedencentral
   AKS_NAME: stefandr-aks
-  ACR_NAME: stefandr-acr
-  ACR_LOGIN_SERVER: stefandr-acr.azurecr.io
+  ACR_NAME: stefandracr
+  ACR_LOGIN_SERVER: stefandracr.azurecr.io
   IMAGE_NAME: k8s-scale-test
   LOAD_TEST_RESOURCE_ID: /subscriptions/113f91f0-83f2-4b50-8e5a-111f1d89e1e1/resourceGroups/aro/providers/Microsoft.LoadTestService/loadTests/stefandr-test
 
