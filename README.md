@@ -57,7 +57,7 @@ az account set --subscription 113f91f0-83f2-4b50-8e5a-111f1d89e1e1
 az group create -n aro -l swedencentral
 az acr create -n stefandracr -g aro --sku Basic
 az aks create -g aro -n stefandr-aks --node-count 2 --enable-managed-identity --enable-addons monitoring --attach-acr stefandracr
-az load test create -g aro -n stefandr-test
+az load create -g aro -n stefandrtest
 ```
 
 ## CI/CD (GitHub Actions + OIDC)

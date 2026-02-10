@@ -4,11 +4,11 @@ param(
   [string]$Location = "swedencentral",
   [string]$AksName = "stefandr-aks",
   [string]$AcrName = "stefandracr",
-  [string]$LoadTestName = "stefandr-test"
+  [string]$LoadTestName = "stefandrtest"
 )
 
 az account set --subscription $SubscriptionId
 az group create -n $ResourceGroup -l $Location
 az acr create -n $AcrName -g $ResourceGroup --sku Basic
 az aks create -g $ResourceGroup -n $AksName --node-count 2 --enable-managed-identity --enable-addons monitoring --attach-acr $AcrName
-az load test create -g $ResourceGroup -n $LoadTestName
+az load create -g $ResourceGroup -n $LoadTestName
