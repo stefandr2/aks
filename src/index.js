@@ -16,7 +16,9 @@ function burnCpu(ms) {
   const end = Date.now() + ms;
   let acc = 0;
   while (Date.now() < end) {
-    acc += Math.sqrt(Math.random());
+    //acc += Math.sqrt(Math.random());
+    acc += 1;
+    if (acc > 1e6) acc = 0;
   }
   return acc;
 }
