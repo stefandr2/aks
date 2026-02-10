@@ -10,22 +10,22 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="HOST" elementType="Argument">
             <stringProp name="Argument.name">HOST</stringProp>
-            <stringProp name="Argument.value">${__P(HOST,REPLACE_ME_HOST)}</stringProp>
+            <stringProp name="Argument.value">${__env(HOST,REPLACE_ME_HOST)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="PORT" elementType="Argument">
             <stringProp name="Argument.name">PORT</stringProp>
-            <stringProp name="Argument.value">${__P(PORT,80)}</stringProp>
+            <stringProp name="Argument.value">${__env(PORT,80)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="CPU_MS" elementType="Argument">
             <stringProp name="Argument.name">CPU_MS</stringProp>
-            <stringProp name="Argument.value">${__P(CPU_MS,200)}</stringProp>
+            <stringProp name="Argument.value">${__env(CPU_MS,200)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="LATENCY_MS" elementType="Argument">
             <stringProp name="Argument.name">LATENCY_MS</stringProp>
-            <stringProp name="Argument.value">${__P(LATENCY_MS,200)}</stringProp>
+            <stringProp name="Argument.value">${__env(LATENCY_MS,200)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>

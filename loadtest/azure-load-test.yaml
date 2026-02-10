@@ -3,8 +3,36 @@ displayName: k8s-scale-test
 description: Basic load test against AKS service
 engineInstances: 1
 testPlan: jmeter/test-plan.jmx
-properties:
-  HOST: REPLACE_ME_HOST
-  PORT: "80"
-  CPU_MS: "200"
-  LATENCY_MS: "200"
+env:
+  - name: HOST
+    value: REPLACE_ME_HOST
+  - name: PORT
+    value: "80"
+  - name: CPU_MS
+    value: "200"
+  - name: LATENCY_MS
+    value: "200"
+appComponents:
+  - resourceId: REPLACE_AKS_RESOURCE_ID
+    resourceName: aks-cluster
+    kind: aks
+    metrics:
+      - name: node_cpu_usage_percentage
+        namespace: microsoft.containerservice/managedclusters
+        aggregation: Average
+      - name: node_memory_usage_percentage
+        namespace: microsoft.containerservice/managedclusters
+        aggregation: Average
+  - resourceId: REPLACE_APPINSIGHTS_RESOURCE_ID
+    resourceName: app-insights
+    kind: web
+    metrics:
+      - name: requests/duration
+        namespace: microsoft.insights/components
+        aggregation: Average
+      - name: requests/count
+        namespace: microsoft.insights/components
+        aggregation: Total
+      - name: requests/failed
+        namespace: microsoft.insights/components
+        aggregation: Total
