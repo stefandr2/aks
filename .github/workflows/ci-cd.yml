@@ -17,7 +17,7 @@ env:
   ACR_NAME: stefandracr
   ACR_LOGIN_SERVER: stefandracr.azurecr.io
   IMAGE_NAME: k8s-scale-test
-  LOAD_TEST_RESOURCE_ID: /subscriptions/113f91f0-83f2-4b50-8e5a-111f1d89e1e1/resourceGroups/aro/providers/Microsoft.LoadTestService/loadTests/stefandrtest
+  LOAD_TEST_RESOURCE_NAME: stefandrtest
 
 jobs:
   build-deploy-test:
@@ -84,4 +84,5 @@ jobs:
         uses: azure/load-testing@v1
         with:
           loadTestConfigFile: loadtest/azure-load-test.yaml
-          resourceId: ${{ env.LOAD_TEST_RESOURCE_ID }}
+          resourceGroup: aro
+          loadTestResource: stefandrtest
