@@ -32,6 +32,7 @@
       <hashTree>
 
         <!-- /healthz -->
+        <!-- /healthz -->
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /healthz" enabled="true">
           <stringProp name="HTTPSampler.domain">9.223.206.255</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
